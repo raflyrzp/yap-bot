@@ -1,4 +1,3 @@
-yap-bot/index.ts
 import { Client, LocalAuth, type Message } from "whatsapp-web.js";
 import qrcode from "qrcode-terminal";
 import Groq from "groq-sdk";
@@ -81,6 +80,7 @@ interface ChatMessage {
 
 const MAX_HISTORY = Number(process.env.MAX_HISTORY) || 20;
 const chatHistory: ChatMessage[] = [];
+const BOT_START_TIMESTAMP = Math.floor(Date.now() / 1000);
 
 function addToHistory(role: "user" | "assistant", content: string) {
   chatHistory.push({ role, content });
@@ -205,15 +205,17 @@ client.on("message", async (message: Message) => {
   if (message.fromMe) return;
   const text = message.body?.trim();
   if (!text) return;
+  if (message.timestamp && message.timestamp < BOT_START_TIMESTAMP) return;
 
   console.log(`📩 [Yaya]: ${text}`);
 
   try {
     const reply = await generateReply(text);
+    const finalReply = `${reply} -YapBot`;
     const chat = await message.getChat();
-    await simulateTyping(chat, reply);
-    await message.reply(reply);
-    console.log(`🤖 [yap-bot]: ${reply}\n`);
+    await simulateTyping(chat, finalReply);
+    await message.reply(finalReply);
+    console.log(`🤖 [yap-bot]: ${finalReply}\n`);
   } catch (err) {
     console.error("❌ Error handling message:", err);
   }
