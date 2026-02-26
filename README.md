@@ -1,102 +1,76 @@
 # yap-bot 🤖💬
 
-Bot WhatsApp pengganti sementara Rafly buat nemenin Yaya ngobrol.
-Powered by **whatsapp-web.js** + **Groq** (Llama 3.3 70B).
+A WhatsApp chatbot powered by **whatsapp-web.js** and **Groq LLM**. Designed for configurable personas, context-aware replies, and simple customization via environment variables.
 
-## Fitur
+## Features
+- 🔑 Login via QR code in the terminal
+- 🎯 Responds only to a configured target WhatsApp number
+- 🧠 Context-aware: keeps recent message history
+- ⌨️ Simulated typing for human-like interaction
+- 📝 Few-shot prompting: customize persona and sample dialogues
+- ⚙️ Fully configurable through `.env`
 
-- 🔐 Login via QR Code di terminal
-- 🎯 Hanya membalas pesan dari nomor target (Yaya)
-- 🧠 Context-aware — menyimpan riwayat chat singkat biar nyambung
-- ⌨️ Simulate typing — ada delay sebelum bales biar keliatan manusiawi
-- 🎭 Few-shot prompting — gaya chat meniru Rafly tapi tetap identitas yap-bot
-- ⚙️ Fully configurable — persona, chat samples, dan model bisa diatur lewat `.env`
+## Quick Start
 
-## Setup
-
-### 1. Install dependencies
-
+1) Install dependencies
 ```bash
 bun install
 ```
 
-### 2. Buat file `.env`
-
-Copy dari template yang sudah disediakan:
-
+2) Create `.env` from the template and edit values
 ```bash
 cp .env.example .env
 ```
-
-Lalu edit `.env` sesuai kebutuhan. Minimal yang **wajib** diisi:
-
+Minimum required:
 ```env
 GROQ_API_KEY=your_groq_api_key_here
-TARGET_NUMBER=62812xxxxx@c.us
+TARGET_NUMBER=62xxxxxxxxxxx@c.us
 ```
+Get a Groq API key at https://console.groq.com.  
+WhatsApp format: country code + number (no `+` or leading `0`), then `@c.us`.
 
-> 🔑 Ambil API key Groq gratis di [console.groq.com](https://console.groq.com).
-> 📱 Format nomor WA: kode negara + nomor tanpa `+` atau `0`, lalu `@c.us`.
-
-### 3. Jalankan bot
-
+3) Run the bot
 ```bash
 bun run start
 ```
-
-Atau mode development (auto-reload):
-
+For development (auto-reload):
 ```bash
 bun run dev
 ```
 
-### 4. Scan QR code
-
-Scan QR code yang muncul di terminal pakai WhatsApp kamu.
-
-### 5. Done! yap-bot siap nemenin Yaya 🎀
+4) Scan the QR code shown in the terminal with your WhatsApp app.
 
 ## Environment Variables
 
-| Variable | Wajib | Default | Deskripsi |
-| --- | --- | --- | --- |
-| `GROQ_API_KEY` | ✅ | — | API key dari Groq |
-| `TARGET_NUMBER` | ✅ | `6281234567890@c.us` | Nomor WA target (format `62xxx@c.us`) |
-| `BOT_PERSONA` | ❌ | Persona bawaan Rafly | Persona/system prompt bot dalam teks biasa. Gunakan `\n` untuk newline |
-| `CHAT_SAMPLES` | ❌ | 7 sample bawaan | Contoh gaya chat dalam format JSON array `[{"user":"...","reply":"..."}]` |
-| `GROQ_MODEL` | ❌ | `llama-3.3-70b-versatile` | Model Groq yang dipakai |
-| `MAX_HISTORY` | ❌ | `20` | Jumlah pesan terakhir yang disimpan untuk konteks percakapan |
+| Variable        | Required | Default                   | Description                                                     |
+|-----------------|----------|---------------------------|-----------------------------------------------------------------|
+| GROQ_API_KEY    | ✅       | —                         | Groq API key for LLM access                                     |
+| TARGET_NUMBER   | ✅       | `6281234567890@c.us`      | WhatsApp target number (format `62xxx@c.us`)                    |
+| BOT_PERSONA     | ❌       | Built-in generic persona  | Persona/system prompt string (use `\n` for new lines)           |
+| CHAT_SAMPLES    | ❌       | Generic examples          | JSON array of `{user, reply}` few-shot examples                 |
+| GROQ_MODEL      | ❌       | `llama-3.3-70b-versatile` | Groq model name                                                 |
+| MAX_HISTORY     | ❌       | `20`                      | Number of recent messages to keep for context                   |
 
-### Kustomisasi Persona
-
-Kamu bisa ganti persona bot sesuai kebutuhan lewat `BOT_PERSONA` di `.env`. Contoh:
-
+## Customizing Persona
+Set `BOT_PERSONA` to define tone and style. Example:
 ```env
-BOT_PERSONA="Kamu adalah bot pengganti sementara dari Budi.\nGaya bicara santai dan gaul.\nPanggilan sayang: \"beb\", \"sayang\"."
+BOT_PERSONA="You are a helpful WhatsApp bot with a friendly, concise style.\nUse emojis occasionally."
 ```
 
-> 💡 Gunakan `\n` untuk baris baru dan `\"` untuk tanda kutip di dalam string.
-
-### Kustomisasi Chat Samples
-
-Chat samples dipakai sebagai few-shot examples biar AI bisa meniru gaya chat. Format JSON array:
-
+## Customizing Chat Samples
+Guide the reply style with few-shot examples via `CHAT_SAMPLES`:
 ```env
-CHAT_SAMPLES='[{"user":"lagi apa?","reply":"ini lagi rebahan beb, kamu gimana?"},{"user":"aku bosen","reply":"yaudah sini aku temenin ngobrol"}]'
+CHAT_SAMPLES='[{"user":"hello bot!","reply":"Hi there! How can I help you today?"},{"user":"tell me a joke","reply":"Why did the chicken cross the road? To get to the other side! 😄"}]'
 ```
-
-> 💡 Setiap item harus punya key `user` (pesan masuk) dan `reply` (contoh balasan).
 
 ## Tech Stack
+- Bun — runtime & package manager
+- whatsapp-web.js — WhatsApp Web client
+- Groq — LLM inference
+- qrcode-terminal — QR rendering in terminal
 
-- [Bun](https://bun.sh) — runtime & package manager
-- [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) — WhatsApp Web client
-- [Groq](https://groq.com) — LLM inference (Llama 3.3 70B)
-- [qrcode-terminal](https://www.npmjs.com/package/qrcode-terminal) — QR code di terminal
-
-## Catatan
-
-- Bot hanya akan membalas pesan dari `TARGET_NUMBER`. Pesan dari nomor lain diabaikan.
-- Riwayat chat disimpan di memori (bukan database). Kalau bot restart, riwayat hilang.
-- Data autentikasi WhatsApp disimpan di folder `.wwebjs_auth/` (sudah di-`.gitignore`).
-- Jangan share API key kamu. File `.env` sudah di-`.gitignore` supaya tidak ter-commit.
+## Notes
+- Only responds to `TARGET_NUMBER`; other senders are ignored.
+- Chat history is in-memory and clears on restart.
+- WhatsApp auth data is stored in `.wwebjs_auth/` (gitignored).
+- Keep your API keys secret; `.env` is gitignored for safety.
